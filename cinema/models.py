@@ -1,4 +1,4 @@
-import os
+import pathlib
 import uuid
 
 from django.core.exceptions import ValidationError
@@ -40,11 +40,9 @@ class Actor(models.Model):
 
 
 def create_custom_path(instance, filename):
-    _, extension = os.path.splitext(filename)
-    return os.path.join(
-        "uploads/images",
-        f"{slugify(instance.title)}-{uuid.uuid4()}{extension}"
-    )
+    filename = (f"{slugify(instance.title)}-{uuid.uuid4()}"
+                f"{pathlib.Path(filename).suffix}")
+    return pathlib.Path("upload/movies/") / pathlib.Path(filename)
 
 
 class Movie(models.Model):
@@ -123,11 +121,11 @@ class Ticket(models.Model):
         )
 
     def save(
-            self,
-            force_insert=False,
-            force_update=False,
-            using=None,
-            update_fields=None,
+        self,
+        force_insert=False,
+        force_update=False,
+        using=None,
+        update_fields=None,
     ):
         self.full_clean()
         return super(Ticket, self).save(
